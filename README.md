@@ -1,160 +1,64 @@
-<h1 align="center" style="position: relative;">
-  <br>
-    <img src="./assets/shoppy-x-ray.svg" alt="logo" width="200">
-  <br>
-  Shopify Skeleton Theme
-</h1>
+# Dawn Practice — Custom Shopify Theme Development
 
-A minimal, carefully structured Shopify theme designed to help you quickly get started. Designed with modularity, maintainability, and Shopify's best practices in mind.
+A custom Shopify theme built on top of Shopify's Dawn framework, developed as part of my Shopify development learning journey. This project demonstrates core Shopify theme development skills including Liquid templating, schema settings, responsive CSS, JavaScript, and the Shopify Ajax API.
 
-<p align="center">
-  <a href="./LICENSE.md"><img src="https://img.shields.io/badge/License-MIT-green.svg" alt="License"></a>
-  <a href="./actions/workflows/ci.yml"><img alt="CI" src="https://github.com/Shopify/skeleton-theme/actions/workflows/ci.yml/badge.svg"></a>
-</p>
+## Live Preview
+Built and tested on a Shopify Partner development store using the Shopify CLI local development server.
 
-## Getting started
+## Custom Sections Built from Scratch
 
-### Prerequisites
+### 1. Announcement Bar
+- Dismissible top banner with cookie persistence
+- Closes on click and stays hidden for 7 days via browser cookie
+- Editable message, background color, and text color via schema settings
 
-Before starting, ensure you have the latest Shopify CLI installed:
+### 2. Promo Banner
+- Full-width promotional banner with editable heading, subtext, and background color
+- Merchant-customizable via Shopify theme editor
 
-- [Shopify CLI](https://shopify.dev/docs/api/shopify-cli) – helps you download, upload, preview themes, and streamline your workflows
+### 3. Featured Product
+- Displays a single product with image, title, price, and Add to Cart button
+- Integrated with cart drawer via Shopify Ajax API
+- "View Full Details" link to full product page
+- Fully responsive — stacks vertically on mobile
 
-If you use VS Code:
+### 4. Product Grid
+- Displays products from a selected collection in a 3-column responsive grid
+- Merchant can select collection and number of products via schema settings
+- Responsive: 2 columns on mobile
 
-- [Shopify Liquid VS Code Extension](https://shopify.dev/docs/storefronts/themes/tools/shopify-liquid-vscode) – provides syntax highlighting, linting, inline documentation, and auto-completion specifically designed for Liquid templates
+### 5. Newsletter Signup
+- Email capture form using Shopify's built-in customer form
+- Displays success message on submission and error handling
+- Fully editable title, subtext, placeholder, and button text
 
-### Clone
+### 6. Ajax Cart Drawer
+- Slide-out cart panel using Shopify's Cart Ajax API (`/cart.js`, `/cart/add.js`, `/cart/change.js`)
+- Opens automatically when a product is added to cart
+- Displays product image, title, quantity, and line price
+- Remove items without page reload
+- Shows cart total and Checkout button
+- Closes on overlay click or ✕ button
 
-Clone this repository using Git or Shopify CLI:
+## Tech Stack
+- Shopify Liquid
+- HTML5 / CSS3
+- Vanilla JavaScript
+- Shopify Ajax Cart API
+- Shopify CLI
+- Git / GitHub
 
-```bash
-git clone git@github.com:Shopify/skeleton-theme.git
-# or
-shopify theme init
-```
+## Skills Demonstrated
+- Shopify theme architecture (layouts, sections, snippets, templates)
+- Liquid templating — objects, tags, filters
+- Section schema settings (text, color, product, collection, range)
+- Responsive design with CSS Grid and Flexbox
+- JavaScript DOM manipulation and event handling
+- Shopify Ajax API integration
+- Cookie-based UI state persistence
+- Git version control workflow
 
-### Preview
-
-Preview this theme using Shopify CLI:
-
-```bash
-shopify theme dev
-```
-
-## Theme architecture
-
-```bash
-.
-├── assets          # Stores static assets (CSS, JS, images, fonts, etc.)
-├── blocks          # Reusable, nestable, customizable UI components
-├── config          # Global theme settings and customization options
-├── layout          # Top-level wrappers for pages (layout templates)
-├── locales         # Translation files for theme internationalization
-├── sections        # Modular full-width page components
-├── snippets        # Reusable Liquid code or HTML fragments
-└── templates       # Templates combining sections to define page structures
-```
-
-To learn more, refer to the [theme architecture documentation](https://shopify.dev/docs/storefronts/themes/architecture).
-
-### Templates
-
-[Templates](https://shopify.dev/docs/storefronts/themes/architecture/templates#template-types) control what's rendered on each type of page in a theme.
-
-The Skeleton Theme scaffolds [JSON templates](https://shopify.dev/docs/storefronts/themes/architecture/templates/json-templates) to make it easy for merchants to customize their store.
-
-None of the template types are required, and not all of them are included in the Skeleton Theme. Refer to the [template types reference](https://shopify.dev/docs/storefronts/themes/architecture/templates#template-types) for a full list.
-
-### Sections
-
-[Sections](https://shopify.dev/docs/storefronts/themes/architecture/sections) are Liquid files that allow you to create reusable modules of content that can be customized by merchants. They can also include blocks which allow merchants to add, remove, and reorder content within a section.
-
-Sections are made customizable by including a `{% schema %}` in the body. For more information, refer to the [section schema documentation](https://shopify.dev/docs/storefronts/themes/architecture/sections/section-schema).
-
-### Blocks
-
-[Blocks](https://shopify.dev/docs/storefronts/themes/architecture/blocks) let developers create flexible layouts by breaking down sections into smaller, reusable pieces of Liquid. Each block has its own set of settings, and can be added, removed, and reordered within a section.
-
-Blocks are made customizable by including a `{% schema %}` in the body. For more information, refer to the [block schema documentation](https://shopify.dev/docs/storefronts/themes/architecture/blocks/theme-blocks/schema).
-
-## Schemas
-
-When developing components defined by schema settings, we recommend these guidelines to simplify your code:
-
-- **Single property settings**: For settings that correspond to a single CSS property, use CSS variables:
-
-  ```liquid
-  <div class="collection" style="--gap: {{ block.settings.gap }}px">
-    ...
-  </div>
-
-  {% stylesheet %}
-    .collection {
-      gap: var(--gap);
-    }
-  {% endstylesheet %}
-
-  {% schema %}
-  {
-    "settings": [{
-      "type": "range",
-      "label": "gap",
-      "id": "gap",
-      "min": 0,
-      "max": 100,
-      "unit": "px",
-      "default": 0,
-    }]
-  }
-  {% endschema %}
-  ```
-
-- **Multiple property settings**: For settings that control multiple CSS properties, use CSS classes:
-
-  ```liquid
-  <div class="collection {{ block.settings.layout }}">
-    ...
-  </div>
-
-  {% stylesheet %}
-    .collection--full-width {
-      /* multiple styles */
-    }
-    .collection--narrow {
-      /* multiple styles */
-    }
-  {% endstylesheet %}
-
-  {% schema %}
-  {
-    "settings": [{
-      "type": "select",
-      "id": "layout",
-      "label": "layout",
-      "values": [
-        { "value": "collection--full-width", "label": "t:options.full" },
-        { "value": "collection--narrow", "label": "t:options.narrow" }
-      ]
-    }]
-  }
-  {% endschema %}
-  ```
-
-## CSS & JavaScript
-
-For CSS and JavaScript, we recommend using the [`{% stylesheet %}`](https://shopify.dev/docs/api/liquid/tags#stylesheet) and [`{% javascript %}`](https://shopify.dev/docs/api/liquid/tags/javascript) tags. They can be included multiple times, but the code will only appear once.
-
-### `critical.css`
-
-The Skeleton Theme explicitly separates essential CSS necessary for every page into a dedicated `critical.css` file.
-
-## Contributing
-
-We're excited for your contributions to the Skeleton Theme! This repository aims to remain as lean, lightweight, and fundamental as possible, and we kindly ask your contributions to align with this intention.
-
-Visit our [CONTRIBUTING.md](./CONTRIBUTING.md) for a detailed overview of our process, guidelines, and recommendations.
-
-## License
-
-Skeleton Theme is open-sourced under the [MIT](./LICENSE.md) License.
+## Setup
+1. Install Shopify CLI: `npm install -g @shopify/cli @shopify/theme`
+2. Clone this repo: `git clone https://github.com/Binzzzzzzzzzzzz/dawn-practice.git`
+3. Run dev server: `shopify theme dev --store YOUR-STORE.myshopify.com`
