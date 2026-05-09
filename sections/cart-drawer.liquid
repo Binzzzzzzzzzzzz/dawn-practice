@@ -1,0 +1,265 @@
+<div class="cart-drawer" id="cart-drawer">
+  <div class="cart-drawer__overlay" id="cart-overlay"></div>
+  <div class="cart-drawer__panel">
+    <div class="cart-drawer__header">
+      <h2>Your Cart</h2>
+      <button class="cart-drawer__close" id="cart-close">✕</button>
+    </div>
+    <div class="cart-drawer__items" id="cart-items">
+      <p class="cart-drawer__empty">Your cart is empty.</p>
+    </div>
+    <div class="cart-drawer__footer" id="cart-footer" style="display:none">
+      <div class="cart-drawer__total">
+        Total: <span id="cart-total"></span>
+      </div>
+      <a href="/checkout" class="cart-drawer__checkout">Checkout</a>
+    </div>
+  </div>
+</div>
+
+{% stylesheet %}
+  .cart-drawer__overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.4);
+    z-index: 99;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s;
+  }
+
+  .cart-drawer__panel {
+    position: fixed;
+    top: 0;
+    right: 0;
+    width: 380px;
+    max-width: 100%;
+    height: 100%;
+    background: #fff;
+    z-index: 100;
+    transform: translateX(100%);
+    transition: transform 0.3s ease;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .cart-drawer.open .cart-drawer__overlay {
+    opacity: 1;
+    pointer-events: all;
+  }
+
+  .cart-drawer.open .cart-drawer__panel {
+    transform: translateX(0);
+  }
+
+  .cart-drawer__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 24px;
+    border-bottom: 1px solid #eee;
+  }
+
+  .cart-drawer__header h2 {
+    font-size: 1.2rem;
+    margin: 0;
+  }
+
+  .cart-drawer__close {
+    background: none;
+    border: none;
+    font-size: 1.2rem;
+    cursor: pointer;
+  }
+
+  .cart-drawer__items {
+    flex: 1;
+    overflow-y: auto;
+    padding: 24px;
+  }
+
+  .cart-drawer__empty {
+    color: #999;
+    text-align: center;
+    margin-top: 40px;
+  }
+
+  .cart-item {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 24px;
+    align-items: center;
+  }
+
+  .cart-item img {
+    width: 80px;
+    height: 80px;
+    object-fit: cover;
+    border-radius: 4px;
+  }
+
+  .cart-item__info {
+    flex: 1;
+  }
+
+  .cart-item__title {
+    font-size: 0.95rem;
+    font-weight: bold;
+    margin-bottom: 4px;
+  }
+
+  .cart-item__price {
+    font-size: 0.9rem;
+    color: #555;
+  }
+
+  .cart-item__remove {
+    background: none;
+    border: none;
+    color: #999;
+    cursor: pointer;
+    font-size: 0.85rem;
+    text-decoration: underline;
+    margin-top: 4px;
+    display: block;
+  }
+
+  .cart-drawer__footer {
+    padding: 20px 24px;
+    border-top: 1px solid #eee;
+  }
+
+  .cart-drawer__total {
+    font-size: 1.1rem;
+    font-weight: bold;
+    margin-bottom: 16px;
+  }
+
+  .cart-drawer__checkout {
+    display: block;
+    background: #000;
+    color: #fff;
+    text-align: center;
+    padding: 16px;
+    text-decoration: none;
+    font-size: 1rem;
+    border-radius: 4px;
+  }
+
+  .cart-drawer__checkout:hover {
+    background: #333;
+  }
+{% endstylesheet %}
+
+{% javascript %}
+  const drawer = document.getElementById('cart-drawer');
+  const overlay = document.getElementById('cart-overlay');
+  const closeBtn = document.getElementById('cart-close');
+  const cartItemsEl = document.getElementById('cart-items');
+  const cartFooter = document.getElementById('cart-footer');
+  const cartTotal = document.getElementById('cart-total');
+
+  // Open drawer
+  function openCart() {
+    fetchCart();
+    drawer.classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+
+  // Close drawer
+  function closeCart() {
+    drawer.classList.remove('open');
+    document.body.style.overflow = '';
+  }
+
+  closeBtn.addEventListener('click', closeCart);
+  overlay.addEventListener('click', closeCart);
+
+  // Fetch cart from Shopify Ajax API
+  function fetchCart() {
+    fetch('/cart.js')
+      .then(res => res.json())
+      .then(cart => renderCart(cart));
+  }
+
+  // Render cart items
+  function renderCart(cart) {
+    if (cart.item_count === 0) {
+      cartItemsEl.innerHTML = '<p class="cart-drawer__empty">Your cart is empty.</p>';
+      cartFooter.style.display = 'none';
+      return;
+    }
+
+    cartFooter.style.display = 'block';
+    cartTotal.textContent = formatMoney(cart.total_price);
+
+    cartItemsEl.innerHTML = cart.items.map(item => `
+      <div class="cart-item">
+        <img src="${item.image}" alt="${item.title}">
+        <div class="cart-item__info">
+          <div class="cart-item__title">${item.title}</div>
+          <div class="cart-item__price">Qty: ${item.quantity} · ${formatMoney(item.line_price)}</div>
+          <button class="cart-item__remove" data-key="${item.key}">Remove</button>
+        </div>
+      </div>
+    `).join('');
+
+    // Remove item buttons
+    cartItemsEl.querySelectorAll('.cart-item__remove').forEach(btn => {
+      btn.addEventListener('click', function() {
+        removeItem(this.dataset.key);
+      });
+    });
+  }
+
+  // Remove item from cart
+  function removeItem(key) {
+    fetch('/cart/change.js', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id: key, quantity: 0 })
+    })
+    .then(res => res.json())
+    .then(cart => renderCart(cart));
+  }
+
+  // Format money (cents to dollars)
+  function formatMoney(cents) {
+    return '$' + (cents / 100).toFixed(2);
+  }
+
+  // Listen for Add to Cart — open drawer after adding
+  document.addEventListener('submit', function(e) {
+    const form = e.target;
+    if (form.action && form.action.includes('/cart/add')) {
+      e.preventDefault();
+      const formData = new FormData(form);
+      fetch('/cart/add.js', {
+        method: 'POST',
+        body: formData
+      })
+      .then(res => res.json())
+      .then(() => openCart());
+    }
+  });
+
+  // Cart icon click — open drawer
+  document.querySelectorAll('a[href="/cart"]').forEach(link => {
+    link.addEventListener('click', function(e) {
+      e.preventDefault();
+      openCart();
+    });
+  });
+{% endjavascript %}
+
+{% schema %}
+{
+  "name": "Cart Drawer",
+  "settings": [],
+  "presets": [
+    {
+      "name": "Cart Drawer"
+    }
+  ]
+}
+{% endschema %}

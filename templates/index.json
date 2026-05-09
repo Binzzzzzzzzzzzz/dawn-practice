@@ -1,5 +1,8 @@
 {
   "sections": {
+    "cart": {
+      "type": "cart-drawer"
+    },
     "announcement": {
       "type": "announcement-bar",
       "settings": {
@@ -30,5 +33,5 @@
       "type": "hello-world"
     }
   },
-  "order": ["announcement", "promo", "featured", "grid", "newsletter", "main"]
+  "order": ["cart", "announcement", "promo", "featured", "grid", "newsletter", "main"]
 }
