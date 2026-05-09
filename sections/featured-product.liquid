@@ -1,0 +1,99 @@
+{% assign product = all_products[section.settings.product] %}
+
+<div class="featured-product">
+  <div class="featured-product__image">
+    {% if product.featured_image %}
+      <img src="{{ product.featured_image | img_url: '500x' }}" alt="{{ product.title }}">
+    {% endif %}
+  </div>
+
+  <div class="featured-product__info">
+    <h2>{{ product.title }}</h2>
+    <p class="featured-product__price">{{ product.price | money }}</p>
+    <p class="featured-product__description">{{ product.description }}</p>
+
+    {% if product %}
+        {% form 'product', product %}
+            <input type="hidden" name="id" value="{{ product.selected_or_first_available_variant.id }}">
+            <button type="submit">Add to Cart</button>
+        {% endform %}
+        <a href="{{ product.url }}" class="view-product-link">View Full Details →</a>
+    {% endif %}
+  </div>
+</div>
+
+{% stylesheet %}
+  .featured-product {
+    display: flex;
+    gap: 40px;
+    align-items: center;
+    max-width: 1100px;
+    margin: 60px auto;
+    padding: 0 24px;
+  }
+
+  .featured-product__image img {
+    width: 400px;
+    object-fit: contain;
+  }
+
+  .featured-product__info h2 {
+    font-size: 2rem;
+    margin-bottom: 10px;
+  }
+
+  .featured-product__price {
+    font-size: 1.5rem;
+    font-weight: bold;
+    margin-bottom: 16px;
+  }
+
+  .featured-product__info button {
+    background: #000;
+    color: #fff;
+    padding: 14px 32px;
+    border: none;
+    font-size: 1rem;
+    cursor: pointer;
+  }
+
+  .featured-product__info button:hover {
+    background: #333;
+  }
+
+  @media (max-width: 768px) {
+  .featured-product {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .featured-product__image img {
+    width: 100%;
+  }
+
+  .view-product-link {
+    display: inline-block;
+    margin-top: 12px;
+    color: #000;
+    text-decoration: underline;
+    }
+}
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Featured Product",
+  "settings": [
+    {
+      "type": "product",
+      "id": "product",
+      "label": "Select Product"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Featured Product"
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,17 @@
+{
+  "sections": {
+    "promo": {
+      "type": "promo-banner"
+    },
+    "featured": {
+      "type": "featured-product",
+      "settings": {
+        "product": "the-collection-snowboard-liquid"
+      }
+    },
+    "main": {
+      "type": "hello-world"
+    }
+  },
+  "order": ["promo", "featured", "main"]
+}
