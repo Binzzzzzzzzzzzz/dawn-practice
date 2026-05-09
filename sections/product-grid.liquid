@@ -1,0 +1,100 @@
+{% assign collection = collections[section.settings.collection] %}
+
+<div class="product-grid-section">
+  <h2>{{ section.settings.title }}</h2>
+  <div class="product-grid">
+    {% for product in collection.products limit: section.settings.product_count %}
+      <div class="product-card">
+        <a href="{{ product.url }}">
+          <img src="{{ product.featured_image | img_url: '400x' }}" alt="{{ product.title }}">
+          <h3>{{ product.title }}</h3>
+          <p>{{ product.price | money }}</p>
+        </a>
+      </div>
+    {% endfor %}
+  </div>
+</div>
+
+{% stylesheet %}
+  .product-grid-section {
+    max-width: 1100px;
+    margin: 60px auto;
+    padding: 0 24px;
+  }
+
+  .product-grid-section h2 {
+    font-size: 2rem;
+    margin-bottom: 30px;
+  }
+
+  .product-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+  }
+
+  .product-card {
+    border: 1px solid #eee;
+    border-radius: 8px;
+    overflow: hidden;
+  }
+
+  .product-card a {
+    text-decoration: none;
+    color: inherit;
+  }
+
+  .product-card img {
+    width: 100%;
+    object-fit: cover;
+  }
+
+  .product-card h3 {
+    padding: 12px 16px 4px;
+    font-size: 1rem;
+  }
+
+  .product-card p {
+    padding: 0 16px 16px;
+    font-weight: bold;
+  }
+
+  @media (max-width: 768px) {
+    .product-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Product Grid",
+  "settings": [
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Section Title",
+      "default": "Our Products"
+    },
+    {
+      "type": "collection",
+      "id": "collection",
+      "label": "Select Collection"
+    },
+    {
+      "type": "range",
+      "id": "product_count",
+      "label": "Number of Products",
+      "min": 2,
+      "max": 12,
+      "step": 1,
+      "default": 6
+    }
+  ],
+  "presets": [
+    {
+      "name": "Product Grid"
+    }
+  ]
+}
+{% endschema %}

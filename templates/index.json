@@ -9,9 +9,17 @@
         "product": "the-collection-snowboard-liquid"
       }
     },
+    "grid": {
+      "type": "product-grid",
+      "settings": {
+        "title": "Our Products",
+        "collection": "automated-collection",
+        "product_count": 6
+      }
+    },
     "main": {
       "type": "hello-world"
     }
   },
-  "order": ["promo", "featured", "main"]
+  "order": ["promo", "featured", "grid", "main"]
 }
