@@ -1,0 +1,80 @@
+<div class="announcement-bar" id="announcement-bar">
+  <p>{{ section.settings.message }}</p>
+  <button class="announcement-bar__close" id="close-announcement">✕</button>
+</div>
+
+{% stylesheet %}
+  .announcement-bar {
+    background-color: {{ section.settings.bg_color }};
+    color: {{ section.settings.text_color }};
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 12px 24px;
+    position: relative;
+    font-size: 0.95rem;
+  }
+
+  .announcement-bar__close {
+    position: absolute;
+    right: 16px;
+    background: none;
+    border: none;
+    color: inherit;
+    font-size: 1rem;
+    cursor: pointer;
+  }
+
+  .announcement-bar.hidden {
+    display: none;
+  }
+{% endstylesheet %}
+
+{% javascript %}
+  const bar = document.getElementById('announcement-bar');
+  const closeBtn = document.getElementById('close-announcement');
+
+  // Check if already dismissed
+  if (document.cookie.includes('announcement_dismissed=true')) {
+    bar.classList.add('hidden');
+  }
+
+  closeBtn.addEventListener('click', function() {
+    bar.classList.add('hidden');
+    // Set cookie for 7 days
+    const expires = new Date();
+    expires.setDate(expires.getDate() + 7);
+    document.cookie = 'announcement_dismissed=true; expires=' + expires.toUTCString() + '; path=/';
+  });
+{% endjavascript %}
+
+{% schema %}
+{
+  "name": "Announcement Bar",
+  "settings": [
+    {
+      "type": "text",
+      "id": "message",
+      "label": "Message",
+      "default": "Free shipping on orders over $100!"
+    },
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "Background Color",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text Color",
+      "default": "#ffffff"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Announcement Bar"
+    }
+  ]
+}
+{% endschema %}

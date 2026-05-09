@@ -1,5 +1,11 @@
 {
   "sections": {
+    "announcement": {
+      "type": "announcement-bar",
+      "settings": {
+        "message": "Free shipping on orders over $100!"
+      }
+    },
     "promo": {
       "type": "promo-banner"
     },
@@ -21,5 +27,5 @@
       "type": "hello-world"
     }
   },
-  "order": ["promo", "featured", "grid", "main"]
+  "order": ["announcement", "promo", "featured", "grid", "main"]
 }
