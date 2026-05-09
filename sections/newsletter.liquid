@@ -1,0 +1,156 @@
+<div class="newsletter-section">
+  <div class="newsletter-inner">
+    <h2>{{ section.settings.title }}</h2>
+    <p>{{ section.settings.subtext }}</p>
+
+    {% form 'customer', id: 'newsletter-form' %}
+      <input type="hidden" name="contact[tags]" value="newsletter">
+      <div class="newsletter-form">
+        <input
+          type="email"
+          name="contact[email]"
+          placeholder="{{ section.settings.placeholder }}"
+          required
+          class="newsletter-input"
+        >
+        <button type="submit" class="newsletter-btn">
+          {{ section.settings.button_text }}
+        </button>
+      </div>
+
+      {% if form.posted_successfully? %}
+        <p class="newsletter-success">Thanks for subscribing!</p>
+      {% endif %}
+
+      {% if form.errors %}
+        <p class="newsletter-error">{{ form.errors | default_errors }}</p>
+      {% endif %}
+    {% endform %}
+  </div>
+</div>
+
+{% stylesheet %}
+  .newsletter-section {
+    background-color: {{ section.settings.bg_color }};
+    padding: 60px 24px;
+    text-align: center;
+  }
+
+  .newsletter-inner {
+    max-width: 600px;
+    margin: 0 auto;
+  }
+
+  .newsletter-section h2 {
+    font-size: 2rem;
+    margin-bottom: 12px;
+    color: {{ section.settings.text_color }};
+  }
+
+  .newsletter-section p {
+    color: {{ section.settings.text_color }};
+    margin-bottom: 24px;
+    opacity: 0.8;
+  }
+
+  .newsletter-form {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+  }
+
+  .newsletter-input {
+    padding: 14px 20px;
+    font-size: 1rem;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    width: 100%;
+    max-width: 360px;
+  }
+
+  .newsletter-btn {
+    padding: 14px 28px;
+    background: #000;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    font-size: 1rem;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+
+  .newsletter-btn:hover {
+    background: #333;
+  }
+
+  .newsletter-success {
+    color: green;
+    margin-top: 16px;
+    font-weight: bold;
+  }
+
+  .newsletter-error {
+    color: red;
+    margin-top: 16px;
+  }
+
+  @media (max-width: 768px) {
+    .newsletter-form {
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .newsletter-input {
+      max-width: 100%;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Newsletter",
+  "settings": [
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Title",
+      "default": "Subscribe to our newsletter"
+    },
+    {
+      "type": "text",
+      "id": "subtext",
+      "label": "Subtext",
+      "default": "Get the latest deals and updates straight to your inbox."
+    },
+    {
+      "type": "text",
+      "id": "placeholder",
+      "label": "Input Placeholder",
+      "default": "Enter your email"
+    },
+    {
+      "type": "text",
+      "id": "button_text",
+      "label": "Button Text",
+      "default": "Subscribe"
+    },
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "Background Color",
+      "default": "#f4f4f4"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text Color",
+      "default": "#000000"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Newsletter"
+    }
+  ]
+}
+{% endschema %}

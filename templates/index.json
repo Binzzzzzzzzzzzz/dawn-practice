@@ -23,9 +23,12 @@
         "product_count": 6
       }
     },
+    "newsletter": {
+      "type": "newsletter"
+    },
     "main": {
       "type": "hello-world"
     }
   },
-  "order": ["announcement", "promo", "featured", "grid", "main"]
+  "order": ["announcement", "promo", "featured", "grid", "newsletter", "main"]
 }
