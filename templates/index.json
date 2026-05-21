@@ -28,10 +28,7 @@
     },
     "newsletter": {
       "type": "newsletter"
-    },
-    "main": {
-      "type": "hello-world"
     }
   },
-  "order": ["cart", "announcement", "promo", "featured", "grid", "newsletter", "main"]
+  "order": ["cart", "announcement", "promo", "featured", "grid", "newsletter"]
 }
